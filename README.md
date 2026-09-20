@@ -18,6 +18,21 @@ tiny core, built up one layer at a time.
 - **A benchmark harness**: recall@k and QPS measured against exact search at every step
 - **38 tests**, including independent correctness checks that a benchmark alone cannot give you
 
+## Install
+
+```bash
+pip install nacredb
+```
+
+## From source (tests and benchmarks)
+
+```bash
+git clone https://github.com/sabmaverick1305/nacredb.git && cd nacredb
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
+
 ## Quick start
 
 ```bash
