@@ -24,23 +24,7 @@ tiny core, built up one layer at a time.
 pip install nacredb
 ```
 
-## From source (tests and benchmarks)
-
-```bash
-git clone https://github.com/sabmaverick1305/nacredb.git && cd nacredb
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
-```
-
 ## Quick start
-
-```bash
-git clone https://github.com/sabmaverick1305/nacredb.git && cd nacredb
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
-```
 
 ```python
 import numpy as np
@@ -50,7 +34,9 @@ from nacredb import FlatIndex, IVFIndex
 # noise has no structure, so approximate search misses more neighbors.)
 rng = np.random.default_rng(0)
 centers = rng.random((100, 64))
-data = (centers[rng.integers(0, 100, 10_000)] + rng.normal(0, 0.05, (10_000, 64))).astype("float32")
+labels = rng.integers(0, 100, 10_000)
+noise = rng.normal(0, 0.05, (10_000, 64))
+data = (centers[labels] + noise).astype("float32")
 
 # Exact search
 flat = FlatIndex(dim=64, metric="l2")          # or "cosine"
@@ -68,6 +54,16 @@ ivf.save("vectors.ndb")
 ivf = IVFIndex.load("vectors.ndb")
 ```
 
+## From source (tests and benchmarks)
+
+```bash
+git clone https://github.com/sabmaverick1305/nacredb.git && cd nacredb
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+python bench/run_ivf.py
+```
+
 ## How it is built
 
 ```
@@ -77,6 +73,9 @@ ivf = IVFIndex.load("vectors.ndb")
                 \           /
               fileformat.py                  <- versioned single-file format
 ```
+
+The step-by-step story, with the numbers and mistakes, is in the
+[build log](https://github.com/sabmaverick1305/nacredb/blob/main/docs/BUILD_LOG.md).
 
 | File | What it teaches |
 |---|---|
@@ -106,8 +105,8 @@ Measured on the author's machine. The first row is an earlier version of
 
 | nprobe | recall@10 | speedup vs. exact |
 |---|---|---|
-| 1 | 0.882 | ~23x |
-| 4 | 0.952 | ~9x |
+| 1 | 0.882 | ~21x |
+| 4 | 0.952 | ~8x |
 | 8 | 0.967 | ~5x |
 | 16 | 0.982 | ~3x |
 | 100 (all partitions) | 1.000 | 0.6x (slower than exact) |
