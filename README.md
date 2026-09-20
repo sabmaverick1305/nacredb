@@ -31,7 +31,11 @@ pytest
 import numpy as np
 from nacredb import FlatIndex, IVFIndex
 
-data = np.random.rand(10_000, 64).astype("float32")
+# Demo data with cluster structure, like real embeddings. (Uniform random
+# noise has no structure, so approximate search misses more neighbors.)
+rng = np.random.default_rng(0)
+centers = rng.random((100, 64))
+data = (centers[rng.integers(0, 100, 10_000)] + rng.normal(0, 0.05, (10_000, 64))).astype("float32")
 
 # Exact search
 flat = FlatIndex(dim=64, metric="l2")          # or "cosine"
@@ -42,7 +46,7 @@ print(flat.search(data[0], k=3))               # [(id, score), ...], lower score
 ivf = IVFIndex(dim=64, nlist=100, nprobe=8)
 ivf.train(data)
 ivf.add_batch(range(len(data)), data)
-print(ivf.search(data[0], k=3))
+print(ivf.search(data[0], k=3))                # same neighbors here; approximate in general
 
 # Persist to a single file and load it back
 ivf.save("vectors.ndb")
