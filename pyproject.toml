@@ -26,8 +26,8 @@ dependencies = ["numpy>=1.26"]
 dev = ["pytest>=8"]
 
 [project.urls]
-Homepage = "https://github.com/sabmaverick-1305/nacredb"
-Issues = "https://github.com/sabmaverick-1305/nacredb/issues"
+Homepage = "https://github.com/sabmaverick1305/nacredb"
+Issues = "https://github.com/sabmaverick1305/nacredb/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
